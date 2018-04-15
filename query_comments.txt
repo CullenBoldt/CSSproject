@@ -1,0 +1,8 @@
+# uses tables 'all_comments' and 'authors' to join comments where author is in the list of authors who commented in both sets of subreddits
+# resulting table was saved to 'comments.csv' and is what was used for the analysis
+
+SELECT table1.body as body, table1.author as author, table1.subreddit as subreddit, table1.score as score
+FROM [certain-frame-197216:Results2.all_comments] as table1
+JOIN [certain-frame-197216:Results2.authors] as table2
+ON table1.author = table2.author
+

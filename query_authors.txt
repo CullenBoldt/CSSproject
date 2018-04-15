@@ -1,0 +1,28 @@
+# selects all users who commented in both location subreddits and mental health subreddit
+# saved resulting table as 'authors' in order to join with 'all_comments' later 
+
+
+SELECT t1.author as author
+FROM 
+(SELECT author, count(author) as c 
+FROM TABLE_QUERY([fh-bigquery:reddit_comments], "REGEXP_MATCH(table_id, '^2017_..$')")
+WHERE subreddit IN ('wichita', 'kansas', 'Lawrence', 'NewMexico', 'SantaFe', 'Albuquerque', 'Indiana', 'indianapolis', 'bloomington', 'California', 'LosAngeles', 'sanfrancisco', 'sandiego', 'Sacramento', 'Arkansas', 'LittleRock', 'fayetteville', 'massachusetts', 'boston', 'WorcesterMA', 'chicago', 'illinois', 'SpringfieldIL', 'Omaha', 'Nebraska', 'lincoln', 'Maine', 'vermont', 'oregon', 'Portland', 'Eugene', 'wyoming', 'northdakota', 'Michigan', 'Detroit', 'lansing', 'Virginia', 'VirginiaBeach', 'norfolk', 'MorgantownWV', 'WestVirginia', 'Washington', 'Seattle', 'Spokane', 'mississippi', 'Nevada', 'LasVegas', 'vegas', 'Reno', 'Colorado', 'Denver', 'ColoradoSprings', 'Iowa', 'desmoines', 'ames', 'newhampshire', 'nyc', 'newyork', 'Buffalo', 'Ohio', 'Cleveland', 'Columbus', 'cincinnati', 'florida', 'Miami', 'orlando', 'tampa', 'jacksonville', 'providence', 'RhodeIsland', 'Delaware', 'WilmingtonDE', 'newhaven', 'hartford', 'Connecticut', 'SaltLakeCity', 'Utah', 'Montana', 'pittsburgh', 'pennsylvania', 'philadelphia', 'Louisville', 'Kentucky', 'lexington', 'sanantonio', 'houston', 'Dallas', 'Texas', 'Alabama', 'Birmingham', 'HuntsvilleAlabama', 'arizona', 'phoenix', 'Tucson', 'SouthDakota', 'Charleston', 'southcarolina', 'ColumbiYEAH', 'Louisiana', 'NewOrleans', 'batonrouge', 'shreveport', 'baltimore', 'maryland', 'minnesota', 'saintpaul', 'Minneapolis', 'duluth', 'Atlanta', 'Georgia', 'Augusta', 'Idaho', 'Boise', 'wisconsin', 'madisonwi', 'milwaukee', 'newjersey', 'Newark', 'jerseycity', 'oklahoma', 'okc', 'tulsa', 'missouri', 'springfieldMO', 'StLouis', 'kansascity', 'Tennessee', 'Knoxville', 'Chattanooga', 'NorthCarolina', 'Charlotte', 'raleigh')
+
+Group by author) t1
+
+JOIN
+
+(SELECT author, count(author) as c 
+FROM TABLE_QUERY([fh-bigquery:reddit_comments], "REGEXP_MATCH(table_id, '^2017_..$')")
+WHERE subreddit IN ('Anxiety', 'SanctionedSuicide', 'SuicideWatch', 'addiction', 'depression','mentalhealth')
+Group by author ) t2
+
+on t1.author = t2.author
+WHERE t1.author NOT LIKE '%Mod%'
+AND t1.author NOT LIKE '[deleted]'
+AND t1.author NOT LIKE '%mod%'
+AND t1.author NOT LIKE '%Bot%'
+AND t1.author NOT LIKE '%bot%'
+AND t1.author NOT LIKE '%auto%'
+AND t1.author NOT LIKE '%Auto%'
+ORDER BY t1.c desc
